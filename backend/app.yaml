@@ -1,3 +1,6 @@
 runtime: python311
 instance_class: F1
 entrypoint: uvicorn main:app --host 0.0.0.0 --port $PORT
+
+env_variables:
+  PROJECT_ID: "still-gravity-478807-t5"
