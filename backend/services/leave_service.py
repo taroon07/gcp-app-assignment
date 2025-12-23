@@ -1,13 +1,17 @@
 from uuid import uuid4
-from database.bigquery_client import bigquery_client
+from database.bigquery_client import BigQueryClient
 
 DATASET = "leave_management"
 TABLE = "leave_applications"
 
+# Helper to generate IDs
 def generate_ids():
     full_uuid = str(uuid4())
     short_uuid = full_uuid[:9]
     return full_uuid, short_uuid
+
+# Initialize the client for use in this service
+bq_service = BigQueryClient()
 
 class LeaveService:
 
@@ -29,8 +33,8 @@ class LeaveService:
             CURRENT_TIMESTAMP()
         )
         """
-
-        bigquery_client.client.query(query).result()
+        # Use bq_service.client
+        bq_service.client.query(query).result()
         return short_id
 
     @staticmethod
@@ -41,8 +45,7 @@ class LeaveService:
         WHERE employee_id = '{employee_id}'
         ORDER BY applied_at DESC
         """
-
-        results = bigquery_client.client.query(query).result()
+        results = bq_service.client.query(query).result()
         return [dict(row) for row in results]
 
     @staticmethod
@@ -52,8 +55,7 @@ class LeaveService:
         FROM `{DATASET}.{TABLE}`
         ORDER BY applied_at DESC
         """
-
-        results = bigquery_client.client.query(query).result()
+        results = bq_service.client.query(query).result()
         return [dict(row) for row in results]
 
     @staticmethod
@@ -63,6 +65,5 @@ class LeaveService:
         SET status = '{status}'
         WHERE leave_id = '{leave_id}'
         """
-
-        bigquery_client.client.query(query).result()
+        bq_service.client.query(query).result()
         return True
