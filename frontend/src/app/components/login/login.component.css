@@ -1,0 +1,101 @@
+.login-page {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  color: #e0e0e0;
+  background: #121212;
+}
+
+.left-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-left: 8%;
+}
+
+.title { font-size: 48px; font-weight: 700; color: #ffffff; }
+.subtitle { margin-top: 10px; font-size: 18px; color: #bbbbbb; }
+
+.right-section {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-box {
+  background: #1e1e1e;
+  padding: 40px;
+  width: 85%;
+  max-width: 420px;
+  border-radius: 14px;
+  box-shadow: 0 0 20px rgba(100, 100, 255, 0.15);
+}
+
+.form-title { font-size: 26px; margin-bottom: 25px; text-align: center; }
+
+.form-group { margin-bottom: 18px; }
+.form-group label { font-size: 14px; color: #cccccc; }
+.form-group input {
+  width: 100%; padding: 12px; margin-top: 6px;
+  border: 1px solid #333; background: #181818;
+  color: white; border-radius: 8px;
+}
+
+/* ERROR CONTAINER - prevents UI from shifting */
+.error-container {
+  height: 45px;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.error {
+  color: #ff6b6b;
+  background: rgba(255, 107, 107, 0.1);
+  padding: 8px 15px;
+  border-radius: 6px;
+  font-size: 14px;
+  border: 1px solid rgba(255, 107, 107, 0.2);
+  width: 100%;
+  text-align: center;
+}
+
+/* LOGIN BUTTON - Invisible until hover or error */
+.login-btn {
+  width: 100%;
+  padding: 13px;
+  background: rgba(255, 255, 255, 0.02); /* Nearly invisible */
+  border: 1px solid transparent;
+  border-radius: 10px;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.5); /* Dim text */
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.login-btn:hover:not(:disabled) {
+  background: #33ff00;
+  color: black;
+  font-weight: bold;
+  box-shadow: 0 0 15px rgba(51, 255, 0, 0.6);
+  border-color: #33ff00;
+}
+
+/* RED ERROR STATE */
+.login-btn.btn-error {
+  background: #ff4b4b !important;
+  color: white !important;
+  border-color: #ff4b4b;
+  box-shadow: 0 0 12px rgba(255, 75, 75, 0.5);
+  opacity: 1 !important;
+}
+
+.login-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}

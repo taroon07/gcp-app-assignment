@@ -1,0 +1,55 @@
+<div class="container">
+  <div class="header">
+    <span class="hello">Hello, {{ userEmail }}</span>
+    <button class="logout-btn" (click)="logout()">Logout</button>
+  </div>
+
+  <h2>All Leave Requests</h2>
+
+  <div *ngIf="isLoadingData" class="loader">Loading leave requests...</div>
+
+  <!-- Render table only when names are loaded -->
+  <table *ngIf="!isLoadingData && allLeaves.length > 0 && isNamesLoaded">
+    <thead>
+      <tr>
+        <th>Employee</th>
+        <th>Type</th>
+        <th>Start</th>
+        <th>End</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let leave of allLeaves">
+        <td>{{ uidToName[leave.employee_id] }}</td>
+        <td>{{ leave.leave_type }}</td>
+        <td>{{ leave.start_date }}</td>
+        <td>{{ leave.end_date }}</td>
+        <td [ngStyle]="{'color': getStatusColor(leave.status), 'font-weight': 'bold'}">
+          {{ leave.status | titlecase }}
+        </td>
+        <td>
+          <button class="ok"
+                  (click)="updateStatus(leave.leave_id, 'approve')"
+                  [disabled]="isLeaveUpdating(leave.leave_id) || leave.status === 'approved'">
+            {{ isLeaveUpdating(leave.leave_id) ? 'Processing...' : 'Accept' }}
+          </button>
+          <button class="no"
+                  (click)="updateStatus(leave.leave_id, 'reject')"
+                  [disabled]="isLeaveUpdating(leave.leave_id) || leave.status === 'rejected'">
+            {{ isLeaveUpdating(leave.leave_id) ? 'Processing...' : 'Reject' }}
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Loader if names are not ready yet -->
+  <div *ngIf="!isLoadingData && !isNamesLoaded" class="loader">Loading employee names...</div>
+
+  <div *ngIf="!isLoadingData && allLeaves.length === 0">
+    No leave requests found.
+  </div>
+</div>

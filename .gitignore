@@ -1,0 +1,11 @@
+# Python junk
+**backend/credentials/
+**/backend_env/
+**/__pycache__/
+*.pyc
+.env
+
+# Angular junk
+**/node_modules/
+/dist/
+.angular/

@@ -1,0 +1,82 @@
+<!-- TITLE OUTSIDE NAVBAR -->
+<h2 class="page-title">Leave Management</h2>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="nav-left">
+    <span class="hello">Hello, {{ userEmail }}</span>
+  </div>
+
+  <div class="nav-right">
+    <button class="logout-btn" (click)="logout()">Logout</button>
+  </div>
+</nav>
+
+<div class="container">
+
+  <div class="header-row">
+    <h2>Your Leave Requests</h2>
+    <button class="apply-btn" (click)="openModal()">Apply Leave</button>
+  </div>
+
+  <div *ngIf="isLoadingData" class="loader">Loading leaves...</div>
+
+  <table *ngIf="!isLoadingData && leaves.length > 0" class="styled-table">
+    <thead>
+      <tr>
+        <th>Leave Type</th>
+        <th>Start</th>
+        <th>End</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let leave of leaves">
+        <td>{{ leave.leave_type }}</td>
+        <td>{{ leave.start_date }}</td>
+        <td>{{ leave.end_date }}</td>
+        <td>
+          <span class="status-badge" [ngStyle]="{'background': getStatusColor(leave.status)}">
+            {{ leave.status | titlecase }}
+          </span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="!isLoadingData && leaves.length === 0" class="no-data">
+    No leave requests found.
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal" *ngIf="showModal">
+  <div class="modal-content">
+    <h3>Apply for Leave</h3>
+
+    <label>Leave Type</label>
+    <input type="text" [(ngModel)]="leave_type">
+
+    <label>Start Date</label>
+    <input type="date" [(ngModel)]="start_date"
+           [min]="minStartDate"
+           (change)="onStartDateChange()">
+
+    <label>End Date</label>
+    <input type="date" [(ngModel)]="end_date"
+           [min]="minEndDate">
+
+    <label>Reason</label>
+    <textarea [(ngModel)]="reason"></textarea>
+
+    <div class="actions">
+      <button class="submit" (click)="submitLeave()" [disabled]="isSubmitting">
+        {{ isSubmitting ? 'Submitting...' : 'Submit' }}
+      </button>
+
+      <button class="cancel" (click)="closeModal()" [disabled]="isSubmitting">
+        Cancel
+      </button>
+    </div>
+  </div>
+</div>

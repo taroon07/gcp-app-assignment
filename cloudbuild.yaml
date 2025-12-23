@@ -1,0 +1,38 @@
+steps:
+  # 1. Deploy Backend to App Engine
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args: ['app', 'deploy', 'backend/app.yaml', '--quiet']
+
+  # 2. Build Frontend Docker Image 
+  # Added -f to tell Docker exactly where the Dockerfile is
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/frontend-app', '-f', 'frontend/dockerfile', './frontend']
+
+  # 3. Push to Google Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/frontend-app']
+
+  # 4. Deploy Frontend to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'my-frontend'
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/frontend-app'
+      - '--region'
+      - 'us-central1'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+      - '--port'
+      - '8080'
+
+# This helps GCP track your images in the console
+images:
+  - 'gcr.io/$PROJECT_ID/frontend-app'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
