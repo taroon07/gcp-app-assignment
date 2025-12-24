@@ -19,7 +19,7 @@ export class ManagerLeavePageComponent implements OnInit {
   userEmail: string = '';
   uidToName: { [uid: string]: string } = {};
 
-  isNamesLoaded: boolean = false; // track when names are ready
+  isNamesLoaded: boolean = false; 
 
   constructor(
     private leaveService: LeaveService,
@@ -46,29 +46,42 @@ export class ManagerLeavePageComponent implements OnInit {
       next: async (data) => {
         this.allLeaves = data;
 
+        // Get unique UIDs to avoid calling Firestore multiple times for the same person
         const uids = Array.from(new Set(this.allLeaves.map(l => l.employee_id)));
+        
         const promises = uids.map(async uid => {
           try {
-            const email = await this.authService.getUserEmailByUid(uid);
-            this.uidToName[uid] = this.extractNameFromEmail(email);
+            // Only fetch if we haven't already fetched this name
+            if (!this.uidToName[uid]) {
+              const email = await this.authService.getUserEmailByUid(uid);
+              this.uidToName[uid] = this.extractNameFromEmail(email);
+            }
           } catch (err) {
             console.error(`Failed to fetch name for UID ${uid}`, err);
             this.uidToName[uid] = 'Unknown';
           }
         });
 
+        // This waits for all "getUserEmailByUid" calls to finish
         await Promise.all(promises);
+        
         this.isNamesLoaded = true;
-        this.cd.markForCheck();
+        this.isLoadingData = false;
+        
+        // 🔥 THIS IS THE FIX: 
+        // Because 'await' happens outside of Angular's normal "zone",
+        // we must manually tell it to refresh the HTML with the new names.
+        this.cd.detectChanges();
       },
-      error: (err) => console.error(err),
-      complete: () => this.isLoadingData = false
+      error: (err) => {
+        console.error(err);
+        this.isLoadingData = false;
+      }
     });
   }
 
   updateStatus(id: string, action: 'approve' | 'reject') {
     if (this.loadingLeaveIds.has(id)) return;
-
     this.loadingLeaveIds.add(id);
 
     this.leaveService.updateLeaveStatus(id, action).subscribe({
@@ -86,7 +99,7 @@ export class ManagerLeavePageComponent implements OnInit {
   getStatusColor(status: string): string {
     if (status === 'approved') return 'green';
     if (status === 'rejected') return 'red';
-    return 'orange'; // pending
+    return 'orange'; 
   }
 
   isLeaveUpdating(id: string): boolean {
@@ -94,6 +107,7 @@ export class ManagerLeavePageComponent implements OnInit {
   }
 
   extractNameFromEmail(email: string): string {
+    if (!email) return 'Unknown';
     const namePart = email.split('@')[0];
     const parts = namePart.split(/[._]/);
     return parts.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(' ');
