@@ -50,7 +50,16 @@ export class EmployeeLeavePageComponent implements OnInit {
     });
   }
 
-  // Set start date >= tomorrow
+  // VALIDATION: Checks if all fields have values
+  get isFormValid(): boolean {
+    return (
+      this.leave_type.trim() !== '' &&
+      this.start_date !== '' &&
+      this.end_date !== '' &&
+      this.reason.trim().length >= 5 // Requires at least 5 characters for reason
+    );
+  }
+
   setMinDates() {
     const today = new Date();
     today.setDate(today.getDate() + 1);
@@ -58,7 +67,6 @@ export class EmployeeLeavePageComponent implements OnInit {
     this.minEndDate = this.minStartDate;
   }
 
-  // Update end date min whenever start changes
   onStartDateChange() {
     this.minEndDate = this.start_date;
     if (this.end_date < this.start_date) {
@@ -74,9 +82,7 @@ export class EmployeeLeavePageComponent implements OnInit {
 
   loadLeaves() {
     if (!this.userId) return;
-
     this.isLoadingData = true;
-
     this.leaveService.getMyLeaves(this.userId).subscribe({
       next: (data) => {
         this.leaves = data;
@@ -88,6 +94,7 @@ export class EmployeeLeavePageComponent implements OnInit {
   }
 
   openModal() { this.showModal = true; }
+  
   closeModal() {
     if (!this.isSubmitting) {
       this.showModal = false;
@@ -100,12 +107,11 @@ export class EmployeeLeavePageComponent implements OnInit {
     this.start_date = '';
     this.end_date = '';
     this.reason = '';
-
     this.minEndDate = this.minStartDate;
   }
 
   submitLeave() {
-    if (!this.userId || this.isSubmitting) return;
+    if (!this.userId || this.isSubmitting || !this.isFormValid) return;
 
     this.isSubmitting = true;
 

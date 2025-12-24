@@ -1,19 +1,15 @@
-<!-- TITLE OUTSIDE NAVBAR -->
 <h2 class="page-title">Leave Management</h2>
 
-<!-- NAVBAR -->
 <nav class="navbar">
   <div class="nav-left">
     <span class="hello">Hello, {{ userEmail }}</span>
   </div>
-
   <div class="nav-right">
     <button class="logout-btn" (click)="logout()">Logout</button>
   </div>
 </nav>
 
 <div class="container">
-
   <div class="header-row">
     <h2>Your Leave Requests</h2>
     <button class="apply-btn" (click)="openModal()">Apply Leave</button>
@@ -49,13 +45,12 @@
   </div>
 </div>
 
-<!-- MODAL -->
 <div class="modal" *ngIf="showModal">
   <div class="modal-content">
     <h3>Apply for Leave</h3>
 
     <label>Leave Type</label>
-    <input type="text" [(ngModel)]="leave_type">
+    <input type="text" [(ngModel)]="leave_type" placeholder="e.g. Annual, Sick">
 
     <label>Start Date</label>
     <input type="date" [(ngModel)]="start_date"
@@ -66,11 +61,13 @@
     <input type="date" [(ngModel)]="end_date"
            [min]="minEndDate">
 
-    <label>Reason</label>
-    <textarea [(ngModel)]="reason"></textarea>
+    <label>Reason (min 5 chars)</label>
+    <textarea [(ngModel)]="reason" placeholder="Briefly explain the reason..."></textarea>
 
     <div class="actions">
-      <button class="submit" (click)="submitLeave()" [disabled]="isSubmitting">
+      <button class="submit" 
+              (click)="submitLeave()" 
+              [disabled]="!isFormValid || isSubmitting">
         {{ isSubmitting ? 'Submitting...' : 'Submit' }}
       </button>
 
